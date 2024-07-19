@@ -32,11 +32,11 @@ func init() {
 
 func getMetrics() {
     for i := 0; i < runtime.NumCPU(); i++ {
-        util := 0.0 // TODO: get CPU core utilization
-        cpuUsage.With(prometheus.Labels{"core": fmt.Sprintf("%d", i)}).Set(util)
+        coreUsage := GetCPUUsage(i)
+        cpuUsage.With(prometheus.Labels{"core": fmt.Sprintf("%d", i)}).Set(coreUsage)
     }
 
-    memUsage.Set(0.0) // TODO: get RAM usage
+    memUsage.Set(GetMemoryUsage())
 }
 
 func metricsHandler(w http.ResponseWriter, r *http.Request) {
