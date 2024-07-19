@@ -40,11 +40,14 @@ func getMetrics() {
 }
 
 func metricsHandler(w http.ResponseWriter, r *http.Request) {
+    log.Println("/metrics")
+
     getMetrics()
     promhttp.Handler().ServeHTTP(w, r)
 }
 
 func main() {
+    log.Println("HPC node exporter runs on http://localhost:8080/metrics")
     http.HandleFunc("/metrics", metricsHandler)
     log.Fatal(http.ListenAndServe(":8080", nil))
 }
