@@ -26,16 +26,16 @@ var (
 
 	gpuUsage = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Name: "memory_usage_bytes",
-			Help: "Memory usage in bytes",
+			Name: "gpu_usage_percentage",
+			Help: "GPU usage in bytes",
 		},
 		[]string{"GPU"},
 	)
 
 	gpuMemUsage = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Name: "memory_usage_bytes",
-			Help: "Memory usage in bytes",
+			Name: "gpu_memory_usage_bytes",
+			Help: "GPU memory usage in bytes",
 		},
 		[]string{"GPU"},
 	)
@@ -44,6 +44,8 @@ var (
 func init() {
 	prometheus.MustRegister(cpuUsage)
 	prometheus.MustRegister(memUsage)
+	prometheus.MustRegister(gpuUsage)
+	prometheus.MustRegister(gpuMemUsage)
 }
 
 func getMetrics() {
