@@ -1,33 +1,13 @@
-package main
+package metrics
 
 import (
 	"log"
 
 	"github.com/mindprince/gonvml"
-	"github.com/shirou/gopsutil/cpu"
-	"github.com/shirou/gopsutil/mem"
 )
 
-func GetCPUUsage() []float64 {
-	percentages, err := cpu.Percent(0, true)
-	if err != nil {
-		log.Printf("Error getting CPU usage: %v", err)
-		return nil
-	}
-	return percentages
-}
-
-func GetMemoryUsage() float64 {
-	v, err := mem.VirtualMemory()
-	if err != nil {
-		log.Printf("Error getting memory usage: %v", err)
-		return 0.0
-	}
-	return float64(v.Used)
-}
-
 func GetGPUMetrics() ([]float64, []float64) {
-	
+
 	if err := gonvml.Initialize(); err != nil {
 		log.Printf("Failed to initialize NVML: %v", err)
 		return nil, nil

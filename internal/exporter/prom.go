@@ -1,11 +1,11 @@
-package main
+package exporter
 
 import (
 	"fmt"
+
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"log"
-	"net/http"
+
+	"hpc-node-exporter/internal/metrics"
 )
 
 var (
@@ -48,34 +48,23 @@ func init() {
 	prometheus.MustRegister(gpuMemUsage)
 }
 
-func getMetrics() {
+func GetMetrics() {
 	//** CPU usage **//
-	coreUsage := GetCPUUsage()
+	coreUsage := metrics.GetCPUUsage()
 	for i := 0; i < len(coreUsage); i++ {
 		label := fmt.Sprintf("%d", i)
 		cpuUsage.With(prometheus.Labels{"core": label}).Set(coreUsage[i])
 	}
 
 	//** main memory usage **//
-	memUsage.Set(GetMemoryUsage())
+	memUsage.Set(metrics.GetMemoryUsage())
 
-	gpuUtil, gpuMemUsed := GetGPUMetrics()
+	
+	//** GPU usage **//
+	gpuUtil, gpuMemUsed := metrics.GetGPUMetrics()
 	for i := 0; i < len(gpuUtil); i++ {
 		label := fmt.Sprintf("%d", i)
 		gpuUsage.With(prometheus.Labels{"GPU": label}).Set(gpuUtil[i])
 		gpuMemUsage.With(prometheus.Labels{"GPU": label}).Set(gpuMemUsed[i])
 	}
-}
-
-func metricsHandler(w http.ResponseWriter, r *http.Request) {
-	log.Println("/metrics")
-
-	getMetrics()
-	promhttp.Handler().ServeHTTP(w, r)
-}
-
-func main() {
-	log.Println("HPC node exporter runs on http://localhost:8080/metrics")
-	http.HandleFunc("/metrics", metricsHandler)
-	log.Fatal(http.ListenAndServe(":8080", nil))
 }
