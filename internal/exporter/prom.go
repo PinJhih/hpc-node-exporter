@@ -39,6 +39,22 @@ var (
 		},
 		[]string{"GPU"},
 	)
+
+	netRX = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "net_rx_bytes",
+			Help: "Net interface received in byte",
+		},
+		[]string{"interface"},
+	)
+
+	netTX = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "net_tx_bytes",
+			Help: "Net interface transmited in byte",
+		},
+		[]string{"interface"},
+	)
 )
 
 func init() {
@@ -46,6 +62,8 @@ func init() {
 	prometheus.MustRegister(memUsage)
 	prometheus.MustRegister(gpuUsage)
 	prometheus.MustRegister(gpuMemUsage)
+	prometheus.MustRegister(netRX)
+	prometheus.MustRegister(netTX)
 }
 
 func GetMetrics() {
@@ -59,12 +77,22 @@ func GetMetrics() {
 	//** main memory usage **//
 	memUsage.Set(metrics.GetMemoryUsage())
 
-	
 	//** GPU usage **//
 	gpuUtil, gpuMemUsed := metrics.GetGPUMetrics()
 	for i := 0; i < len(gpuUtil); i++ {
 		label := fmt.Sprintf("%d", i)
 		gpuUsage.With(prometheus.Labels{"GPU": label}).Set(gpuUtil[i])
 		gpuMemUsage.With(prometheus.Labels{"GPU": label}).Set(gpuMemUsed[i])
+	}
+
+	//** Network **//
+	rx, _ := metrics.GetNetworkRXBytes()
+	for i := 0; i < len(rx); i++ {
+		netRX.With(prometheus.Labels{"interface": rx[i].Name}).Set(float64(rx[i].Bytes))
+	}
+
+	tx, _ := metrics.GetNetworkTXBytes()
+	for i := 0; i < len(rx); i++ {
+		netTX.With(prometheus.Labels{"interface": tx[i].Name}).Set(float64(tx[i].Bytes))
 	}
 }
