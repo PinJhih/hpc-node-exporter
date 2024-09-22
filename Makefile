@@ -1,17 +1,19 @@
 BINARY_NAME=hpc-node-exporter
 BUILD_DIR=build
 
-.PHONY: all
-all: build
+.PHONY: all run run-bin clean
+all: $(BUILD_DIR)/$(BINARY_NAME)
 
-build: $(BUILD_DIR)/$(BINARY_NAME)
+$(BUILD_DIR)/$(BINARY_NAME):
 	mkdir -p $(BUILD_DIR)
 	go build -o $(BUILD_DIR)/$(BINARY_NAME) ./cmd
 
-.PHONY: run
 run:
 	go run ./cmd/hpc-node-exporter.go
 
-.PHONY: clean
+run-bin:
+	make all
+	./$(BUILD_DIR)/$(BINARY_NAME)
+
 clean:
 	rm -rf $(BUILD_DIR)/*

@@ -13,3 +13,9 @@ make run
 ```
 make && ./build/hpc-node-exporter
 ```
+
+or
+
+```
+make run-bin
+```
