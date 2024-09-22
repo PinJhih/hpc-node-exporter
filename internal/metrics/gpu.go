@@ -2,27 +2,41 @@ package metrics
 
 import (
 	"log"
+	"sync"
 
 	"github.com/mindprince/gonvml"
 )
 
+var (
+	initOnce        sync.Once
+	initializeError error
+	deviceCount     uint
+)
+
 func GetGPUMetrics() ([]float64, []float64) {
+	// init NVML
+	initOnce.Do(func() {
+		initializeError = gonvml.Initialize()
+		if initializeError != nil {
+			log.Printf("Failed to initialize NVML: %v", initializeError)
+			return
+		}
+		var err error
+		deviceCount, err = gonvml.DeviceCount()
+		if err != nil {
+			log.Printf("Failed to get device count: %v", err)
+			initializeError = err
+			return
+		}
+	})
 
-	if err := gonvml.Initialize(); err != nil {
-		log.Printf("Failed to initialize NVML: %v", err)
+	if initializeError != nil {
 		return nil, nil
 	}
-	defer gonvml.Shutdown()
 
-	deviceCount, err := gonvml.DeviceCount()
-	if err != nil {
-		log.Printf("Failed to get device count: %v", err)
-		return nil, nil
-	}
-
+	// get metrics of each device
 	gpuUsage := make([]float64, deviceCount)
 	gpuMemoryUsage := make([]float64, deviceCount)
-
 	for i := uint(0); i < deviceCount; i++ {
 		device, err := gonvml.DeviceHandleByIndex(i)
 		if err != nil {

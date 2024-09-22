@@ -12,7 +12,7 @@ var (
 	cpuUsage = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "cpu_usage_percentage",
-			Help: "CPU usage percentage per core",
+			Help: "CPU utilization of each core",
 		},
 		[]string{"core"},
 	)
@@ -27,7 +27,7 @@ var (
 	gpuUsage = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "gpu_usage_percentage",
-			Help: "GPU usage in bytes",
+			Help: "GPU utilization of each GPU",
 		},
 		[]string{"GPU"},
 	)
@@ -35,7 +35,7 @@ var (
 	gpuMemUsage = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: "gpu_memory_usage_bytes",
-			Help: "GPU memory usage in bytes",
+			Help: "GPU memory usage in bytes of each GPU",
 		},
 		[]string{"GPU"},
 	)
